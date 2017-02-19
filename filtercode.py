@@ -1,1 +1,1 @@
-Hej hej
+print ("Hello World!")
