@@ -1,8 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
-
-x = np.array([1, 1, 1], dtype=np.float32)
-
-sinx = np.sin(x)
-
-print(sinx)
+plt.plot(range(10))
+plt.show()
