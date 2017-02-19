@@ -5,8 +5,6 @@ T = 1/Fs
 print("Fs =", Fs, "Hz")
 print("T =", T, "s")
 
-prin(32)
-
 t = np.arange(0, 1, 1/Fs)
 
 print(t)
