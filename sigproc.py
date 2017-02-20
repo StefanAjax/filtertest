@@ -3,9 +3,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io.wavfile import write
-from scipy.signal import butter, lfilter, freqz
+from scipy.signal import butter, lfilter
 import pyaudio
 import wave
+import time
 
 
 def butter_lowpass(cutoff, fs, order=5):
@@ -23,8 +24,8 @@ def butter_lowpass_filter(data, cutoff, fs, order=5):
 
 order = 6
 
-f1 = 113.0  
-f2 = 83.0
+f1 = 649.0  
+f2 = 400.0
 cf = 8000
 
 fs = 44100.0 
@@ -119,4 +120,36 @@ write('ymr.wav', 44100, scaled)
 scaled = np.int16(ymrl/np.max(np.abs(ymrl))*32767)
 write('ymrl.wav', 44100, scaled)
 
-eval(input())
+chunk = 1024  
+
+# open a wav format music
+
+for i in ["y.wav", "ym.wav", "ymr.wav", "ymrl.wav"]:
+
+    f = wave.open(i, "rb")
+    print(f.getnchannels())
+    # instantiate PyAudio
+    p = pyaudio.PyAudio()
+    # open stream
+    stream = p.open(format=p.get_format_from_width(f.getsampwidth()),
+                    channels=f.getnchannels(),
+                    rate=f.getframerate(),
+                    output=True)
+    # read data
+    data = f.readframes(chunk)
+    #
+    # play stream
+    while data:
+        stream.write(data)
+        data = f.readframes(chunk)
+
+    # stop stream
+    stream.stop_stream()
+    stream.close()
+    
+    # close PyAudio
+    p.terminate()
+    time.sleep(2)
+
+
+# eval(input()
