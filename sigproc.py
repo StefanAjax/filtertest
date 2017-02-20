@@ -1,7 +1,27 @@
+# Kolla upp freqs och butter
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io.wavfile import write
+from scipy.signal import butter, lfilter, freqz
+import pyaudio
+import wave
 
+
+def butter_lowpass(cutoff, fs, order=5):
+    nyq = 0.5 * fs
+    normal_cutoff = cutoff / nyq
+    b, a = butter(order, normal_cutoff, btype='low', analog=False)
+    return b, a
+
+
+def butter_lowpass_filter(data, cutoff, fs, order=5):
+    b, a = butter_lowpass(cutoff, fs, order=order)
+    y = lfilter(b, a, data)
+    return y
+
+
+order = 6
 
 f1 = 113.0  
 f2 = 83.0
@@ -56,12 +76,47 @@ freqax2.set_ylabel('Frequency')
 
 # print(yfabs[2929:2931])
 
-scaled = np.int16(y/np.max(np.abs(y))*32767)
-write('test.wav', 44100, scaled)
+ymr = ym*carrier
+ymrf = np.fft.fft(ymr)
+ymrfabs = np.absolute(ymrf)
+
+fig3 = plt.figure(3)
+timeax3 = fig3.add_subplot(2, 1, 1)
+freqax3 = fig3.add_subplot(2, 1, 2)
+
+timeax3.plot(t, ymr)
+freqax3.vlines(f, 0, ymrfabs)
+freqax3.plot(f, ymrfabs, 'ko')
+timeax3.set_ylabel('Time')
+freqax3.set_ylabel('Frequency')
+
+
+ymrl = butter_lowpass_filter(ymr, 800, fs, order=5)
+ymrlf = np.fft.fft(ymrl)
+ymrlfabs = np.absolute(ymrlf)
+
+fig4 = plt.figure(4)
+timeax4 = fig4.add_subplot(2, 1, 1)
+freqax4 = fig4.add_subplot(2, 1, 2)
+
+timeax4.plot(t, ymrl)
+freqax4.vlines(f, 0, ymrlfabs)
+freqax4.plot(f, ymrlfabs, 'ko')
+timeax4.set_ylabel('Time')
+freqax4.set_ylabel('Frequency')
 
 plt.show(block=False)
 
-while True:
-    print("Skriv: ", end="")
-    a = input()
-    print(eval(a))
+scaled = np.int16(y/np.max(np.abs(y))*32767)
+write('y.wav', 44100, scaled)
+
+scaled = np.int16(ym/np.max(np.abs(ym))*32767)
+write('ym.wav', 44100, scaled)
+
+scaled = np.int16(ymr/np.max(np.abs(ymr))*32767)
+write('ymr.wav', 44100, scaled)
+
+scaled = np.int16(ymrl/np.max(np.abs(ymrl))*32767)
+write('ymrl.wav', 44100, scaled)
+
+eval(input())
