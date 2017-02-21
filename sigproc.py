@@ -120,14 +120,13 @@ write('ymr.wav', 44100, scaled)
 scaled = np.int16(ymrl/np.max(np.abs(ymrl))*32767)
 write('ymrl.wav', 44100, scaled)
 
-chunk = 1024  
+chunk = 4096  
 
 # open a wav format music
 
 for i in ["y.wav", "ym.wav", "ymr.wav", "ymrl.wav"]:
 
     f = wave.open(i, "rb")
-    print(f.getnchannels())
     # instantiate PyAudio
     p = pyaudio.PyAudio()
     # open stream
@@ -146,10 +145,10 @@ for i in ["y.wav", "ym.wav", "ymr.wav", "ymrl.wav"]:
     # stop stream
     stream.stop_stream()
     stream.close()
-    
+
     # close PyAudio
     p.terminate()
     time.sleep(2)
 
 
-# eval(input()
+eval(input())
